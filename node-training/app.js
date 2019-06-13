@@ -9,8 +9,10 @@ const app = express();
 const mongoose = require('mongoose');
 let dev_db_url = 'mongodb://localhost:27017/test';
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
-mongoose.connect(mongoDB);
+mongoose.connect(mongoDB, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
+require("./models/company");
+
 const db = mongoose.connection;
 db.on('connected', () => { console.log("mongoose connection is ok") });
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));

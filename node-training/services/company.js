@@ -18,13 +18,14 @@ function findAll() {
 
 function create(data) {
     return new Promise(function (resolve, reject) {
-        const company = new Company({
-            name: data.name
+        new Company({name: data.name}).save((err, result) => {
+            if (err) {
+                reject(err);
+            } if (result) {
+                resolve(result);
+            }
+            resolve(null);
         });
-
-        Company.save(company, (err, result) => {
-            err ? reject(err) : resolve(result);
-        })
     });
 }
 
@@ -41,7 +42,12 @@ function findExist(data) {
         Company.findOne({
             name: data.name
         }, (err, result) => {
-            err ? reject(err) : resolve(result);
+            if (err) {
+                reject(err);
+            } if (result) {
+                resolve(result);
+            }
+            resolve(null);
         })
     });
 }
