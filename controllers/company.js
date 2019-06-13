@@ -1,10 +1,10 @@
 const companyService = require('../services/company');
 
-exports.findById = (req, res) => {
+exports.findById = async (req, res) => {
     let data;
 
     try {
-        data = companyService.findById(req.params.id);
+        data = await companyService.findById(req.params.id);
     } catch (e) {
         return res.status(500).send({
             message: "Error retrieving Company with ID: " + req.params.id
@@ -20,11 +20,11 @@ exports.findById = (req, res) => {
     return res.status(200).send(data);
 };
 
-exports.findAll = (req, res) => {
+exports.findAll = async (req, res) => {
     let data;
 
     try {
-        data = companyService.findAll();
+        data = await companyService.findAll();
     } catch (e) {
         return res.status(500).send({
             message: "Error retrieving Company list"
@@ -37,21 +37,19 @@ exports.findAll = (req, res) => {
         })
     }
 
-    res.status(200).send(data);
+    return res.status(200).send(data);
 };
 
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     let data;
 
     try {
-        data = companyService.findExist(req.body);
+        data = await companyService.findExist(req.body);
     } catch (e) {
         return res.status(500).send({
             message: "Error finding existing Company"
         });
     }
-
-    console.log(data);
 
     if (data) {
         return res.status(404).send({
@@ -60,24 +58,40 @@ exports.create = (req, res) => {
     }
 
     data = {
-      name: req.params.name
+      name: req.body.name
     };
 
     try {
-        companyService.create(data);
+       await companyService.create(data);
     } catch(e) {
         return res.status(500).send({
             message: "Error creating Company"
         });
     }
 
-    res.status(200).send(data);
+    return res.status(200).send(data);
 };
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
+    let result;
 
+    try {
+        result = await companyService.update(req.params.id, req.body);
+    } catch (e) {
+        return res.status(500).send({
+            message: "Error update Company"
+        });
+    }
+
+    if(result) {
+        return res.status(500).send({
+            message: "Company not found"
+        });
+    }
+
+    return res.status(200).send(result);
 };
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
 
 };

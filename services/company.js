@@ -16,26 +16,6 @@ function findAll() {
     });
 }
 
-function create(data) {
-    return new Promise(function (resolve, reject) {
-        const company = new Company({
-            name: data.name
-        });
-
-        Company.save(company, (err, result) => {
-            err ? reject(err) : resolve(result);
-        })
-    });
-}
-
-function update(id) {
-    return new Promise(function (resolve, reject) {
-        Company.findById(id, (err, result) => {
-
-        })
-    });
-}
-
 function findExist(data) {
     return new Promise(function (resolve, reject) {
         Company.findOne({
@@ -46,8 +26,43 @@ function findExist(data) {
     });
 }
 
+function create(data) {
+    return new Promise(function (resolve, reject) {
+        new Company({
+            name: data.name
+        }).save((err, result) => {
+            if(err) {
+                reject(err);
+            } if(result) {
+                resolve(result);
+            }
+
+            resolve(null);
+        })
+    });
+}
+
+function update(id, data) {
+    return new Promise(function (resolve, reject) {
+        Company.updateOne(id, {
+            name: data.name
+        }, (err, result) => {
+            if(err) {
+                reject(err);
+            } if(result) {
+                resolve(result);
+            }
+
+            resolve(null);
+        })
+    });
+}
+
 module.exports = {
     findById,
     findExist,
-    create
+    findAll,
+    create,
+    update,
+    delete
 };
