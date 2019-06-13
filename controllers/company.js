@@ -1,5 +1,5 @@
 const companyService = require('../services/company');
-
+const mongoose = require("mongoose");
 exports.findById = async (req, res) => {
     let data;
 
@@ -63,7 +63,7 @@ exports.create = async (req, res) => {
 
     try {
        await companyService.create(data);
-    } catch(e) {
+    } catch (e) {
         return res.status(500).send({
             message: "Error creating Company"
         });
@@ -76,14 +76,14 @@ exports.update = async (req, res) => {
     let result;
 
     try {
-        result = await companyService.update(req.params.id, req.body);
+        result = await companyService.update(mongoose.Types.ObjectId(req.params.id), req.body);
     } catch (e) {
         return res.status(500).send({
             message: "Error update Company"
         });
     }
 
-    if(result) {
+    if(!result) {
         return res.status(500).send({
             message: "Company not found"
         });

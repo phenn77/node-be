@@ -44,7 +44,7 @@ function create(data) {
 
 function update(id, data) {
     return new Promise(function (resolve, reject) {
-        Company.updateOne(id, {
+        Company.updateOne({_id: id}, {
             name: data.name
         }, (err, result) => {
             if(err) {
@@ -63,6 +63,5 @@ module.exports = {
     findExist,
     findAll,
     create,
-    update,
-    delete
-};
+    update
+}
