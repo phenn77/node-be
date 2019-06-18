@@ -1,9 +1,9 @@
-const Company = require('../models/company');
+const Product = require('../models/product');
 
 function findById(id) {
-    return new Promise(function (resolve, reject) {
-        Company.findOne({_id: id})
-            .populate('products')
+    return new Promise(function(resolve, reject) {
+        Product.findOne({_id: id})
+            .populate('company')
             .exec((err, result) => {
                 if(err) {
                     reject(err);
@@ -17,9 +17,9 @@ function findById(id) {
 }
 
 function findAll() {
-    return new Promise(function (resolve, reject) {
-        Company.find({})
-            .populate('products')
+    return new Promise(function(resolve, reject) {
+        Product.find({})
+            .populate('company')
             .exec((err, result) => {
                 if(err) {
                     reject(err);
@@ -28,24 +28,32 @@ function findAll() {
                 }
 
                 resolve(null);
-            })
-    });
-}
-
-function findExist(data) {
-    return new Promise(function (resolve, reject) {
-        Company.findOne({
-            name: data.name
-        }, (err, result) => {
-            err ? reject(err) : resolve(result);
         })
     });
 }
 
-function create(data) {
-    return new Promise(function (resolve, reject) {
-        new Company({
+function findExist(data) {
+    return new Promise(function(resolve, reject) {
+        Product.findOne({
             name: data.name
+        }, (err, result) => {
+            if(err) {
+                reject(err);
+            } if(result) {
+                resolve(result);
+            }
+
+            resolve(null);
+        });
+    });
+}
+
+function create(data) {
+    return new Promise(function(resolve, reject) {
+        new Product({
+            name: data.name,
+            price: data.price,
+            company: data.company
         }).save((err, result) => {
             if(err) {
                 reject(err);
@@ -54,14 +62,16 @@ function create(data) {
             }
 
             resolve(null);
-        })
+        });
     });
 }
 
 function update(id, data) {
-    return new Promise(function (resolve, reject) {
-        Company.updateOne({_id: id}, {
-            name: data.name
+    return new Promise(function(resolve, reject) {
+        Product.updateOne({_id: id}, {
+            name: data.name,
+            price: data.price,
+            company: data.company
         }, (err, result) => {
             if(err) {
                 reject(err);
@@ -76,7 +86,7 @@ function update(id, data) {
 
 function remove(id) {
     return new Promise(function(resolve, reject) {
-        Company.deleteOne({_id: id}, (err, result) => {
+        Product.deleteOne({_id: id}, (err, result) => {
             if(err) {
                 reject(err);
             } if(result) {
@@ -84,15 +94,15 @@ function remove(id) {
             }
 
             resolve(null);
-        })
-    })
+        });
+    });
 }
 
 module.exports = {
     findById,
-    findExist,
     findAll,
+    findExist,
     create,
     update,
     remove
-}
+};

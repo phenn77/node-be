@@ -2,7 +2,21 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const CompanySchema = new Schema({
-    name: String
+    name: {
+        type: String,
+        unique: true,
+        required: true
+    }
+}, {
+    timestamps: true,
+    toObject: {virtuals: true},
+    toJSON: {virtuals: true}
+});
+
+CompanySchema.virtual('products', {
+    ref: 'Product',
+    localField: '_id',
+    foreignField: 'company'
 });
 
 module.exports = mongoose.model('Company', CompanySchema);
