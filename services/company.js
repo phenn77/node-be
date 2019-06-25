@@ -16,6 +16,21 @@ function findById(id) {
     });
 }
 
+function findCompany(id,data) {
+    return new Promise(function (resolve, reject)  {
+        Company.findOne({ $and: [
+            { name:  data.name },
+            { _id: { $ne: id } } ]}, (err,result) => {
+            if (err) {
+                reject(err);
+            } if(result) {
+                resolve(result);
+            }
+            resolve(null);
+        });
+    });
+}
+
 function findAll() {
     return new Promise(function (resolve, reject) {
         Company.find({})
@@ -89,6 +104,7 @@ function remove(id) {
 }
 
 module.exports = {
+    findCompany,
     findById,
     findExist,
     findAll,

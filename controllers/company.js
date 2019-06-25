@@ -68,7 +68,7 @@ exports.update = async (req, res) => {
 
     try {
         data = await companyService.findById(req.params.id);
-    }catch (e) {
+    } catch (e) {
         return message.error(res, "Error finding Company");
     }
 
@@ -77,6 +77,17 @@ exports.update = async (req, res) => {
     }
 
     data = req.body;
+    let nameTaken;
+    try {
+        nameTaken = await companyService.findCompany(req.params.id, data);
+    } catch (e) {
+        console.log(e);
+        return message.error(res, "Error finding company");
+    }
+    console.log(nameTaken);
+    if (nameTaken) {
+        return message.error(res, "Name already taken");
+    }
 
     try {
         await companyService.update(req.params.id, data);
