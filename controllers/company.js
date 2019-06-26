@@ -7,7 +7,7 @@ exports.findById = async (req, res) => {
     try {
         data = await companyService.findById(req.params.id);
     } catch (e) {
-        return message.error(res, "Error retrieving Company");
+        return message.error(res, "Error finding Company");
     }
 
     if (!data) {
@@ -23,58 +23,76 @@ exports.findAll = async (req, res) => {
     try {
         data = await companyService.findAll();
     } catch (e) {
-        return res.status(500).send({
-            message: "Error retrieving Company list"
-        });
+        return message.error(res, "Error retrieving Company list");
     }
 
-    return res.status(200).send(data);
+    return message.success(res, data);
 };
 
 exports.create = async (req, res) => {
     let data;
 
-    try {
-        data = await companyService.findExist(req.body);
-    } catch (e) {
-        return res.status(500).send({
-            message: "Error finding existing Company"
-        });
-    }
-
-    if (data) {
-        return res.status(404).send({
-            message: "Company already exist"
-        });
-    }
-
-    data = {
-      name: req.body.name
+    const filter = {
+        name: req.body.name
     };
 
     try {
-       await companyService.create(data);
+        data = await companyService.findExist(filter);
     } catch (e) {
-        return res.status(500).send({
-            message: "Error creating Company"
-        });
+        return message.error(res, "Error finding Company");
     }
 
-    return res.status(200).send(data);
+    if (data) {
+        return message.notFound(res,"Company already exist");
+    }
+
+    data = {
+        name: req.body.name
+    };
+
+    try {
+        await companyService.create(data);
+    } catch (e) {
+        return message.error(res, "Error creating Company");
+    }
+
+    return message.success(res, data);
 };
 
 exports.update = async (req, res) => {
     let data;
 
+    let nameTaken;
+    const filter = {
+        $and: [
+            {name: req.body.name},
+            {_id: {$ne: req.params.id}}
+        ]
+    };
+
+    /* Find Company */
     try {
         data = await companyService.findById(req.params.id);
-    }catch (e) {
+    } catch (e) {
         return message.error(res, "Error finding Company");
     }
 
-    if(!data) {
+    if (!data) {
         return message.notFound(res, "Company not found");
     }
+    /* Find Company */
+
+    /* Find Exist Company's name */
+    try {
+        nameTaken = await companyService.findExist(filter);
+    } catch (e) {
+        return message.error(res, "Error finding Company");
+    }
+
+    if(nameTaken) {
+        return message.notFound(res, "Company already exist");
+    }
+    /* Find Exist Company's name */
 
     data = req.body;
 
@@ -93,15 +111,11 @@ exports.delete = async (req, res) => {
     try {
         data = await companyService.remove(req.params.id);
     } catch (e) {
-        return res.status(500).send({
-            message: "Error deleting Company"
-        });
+        return message.error(res, "Error deleting Company");
     }
 
-    if(!data) {
-        return res.status(500).send({
-            message: "Company not found"
-        });
+    if (!data) {
+        return message.notFound(res, "Company not found");
     }
 
     return res.status(200).send({

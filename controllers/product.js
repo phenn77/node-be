@@ -8,7 +8,7 @@ exports.findById = async (req, res) => {
     try {
         data = await productService.findById(req.params.id);
     } catch (e) {
-        return message.error(res, "Error retrieving Product with ID: " + req.params.id);
+        return message.error(res, "Error finding Product with ID");
     }
 
     if (!data) {
@@ -34,8 +34,13 @@ exports.create = async (req, res) => {
     let data;
     let companyData;
 
+    const filter = {
+        name: req.body.name
+    };
+
+    /* Find Exist */
     try {
-        data = await productService.findExist(req.body);
+        data = await productService.findExist(filter);
     } catch (e) {
         return message.error(res, "Error finding Product")
     }
@@ -43,7 +48,9 @@ exports.create = async (req, res) => {
     if (data) {
         return message.error(res, "Product is already exist")
     }
+    /* Find Exist */
 
+    /* Find Company to connect with */
     try {
         companyData = await companyService.findById(req.body.company);
     } catch (e) {
@@ -53,6 +60,7 @@ exports.create = async (req, res) => {
     if (!companyData) {
         return message.notFound(res, "Company not found");
     }
+    /* Find Company to connect with */
 
     data = {
         name: req.body.name,
@@ -72,15 +80,38 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
     let data;
 
+    let nameTaken;
+    const filter = {
+        $and: [
+            {name: req.body.name},
+            {_id: {$ne: req.params.id}}
+        ]
+    };
+
+    /* Find Product */
     try {
         data = await productService.findById(req.params.id);
     } catch (e) {
-        return message.error(res, "Error retrieving Product");
+        return message.error(res, "Error finding Product");
     }
 
     if (!data) {
         return message.notFound(res, "Product not found");
     }
+    /* Find Product */
+
+    /* Find Exist Product's name */
+
+    try {
+        nameTaken = await productService.findExist(filter);
+    } catch {
+        return message.error(res, "Error finding Product");
+    }
+
+    if(nameTaken) {
+        return message.notFound(res, "Product already exist");
+    }
+    /* Find Exist Product's name */
 
     data = req.body;
 
@@ -98,11 +129,11 @@ exports.delete = async (req, res) => {
 
     try {
         data = await productService.findById(req.params.id);
-    }catch (e) {
+    } catch (e) {
         return message.error(res, "Error finding Product");
     }
 
-    if(!data) {
+    if (!data) {
         return message.notFound(res, "Product not found");
     }
 

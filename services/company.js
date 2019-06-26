@@ -32,11 +32,9 @@ function findAll() {
     });
 }
 
-function findExist(data) {
+function findExist(filter) {
     return new Promise(function (resolve, reject) {
-        Company.findOne({
-            name: data.name
-        }, (err, result) => {
+        Company.findOne(filter, (err, result) => {
             err ? reject(err) : resolve(result);
         })
     });
