@@ -1,6 +1,6 @@
 function error(res, msg) {
     return res.status(500).send({
-        message: msg
+        error: msg
     });
 }
 

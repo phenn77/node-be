@@ -5,15 +5,16 @@ const ProductSchema = new Schema({
     name: {
         type: String,
         unique: true,
-        required: true
+        required: [true, 'Product name is required']
     },
     price: {
         type: Number,
-        required: true
+        min: 1,
+        required: [true, 'Product price is required']
     },
     company: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true,
+        required: [true, 'Company is required'],
         ref: 'Company'
     }
 }, {

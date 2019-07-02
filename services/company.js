@@ -5,9 +5,10 @@ function findById(id) {
         Company.findOne({_id: id})
             .populate('products')
             .exec((err, result) => {
-                if(err) {
+                if (err) {
                     reject(err);
-                } if(result) {
+                }
+                if (result) {
                     resolve(result);
                 }
 
@@ -21,9 +22,10 @@ function findAll() {
         Company.find({})
             .populate('products')
             .exec((err, result) => {
-                if(err) {
+                if (err) {
                     reject(err);
-                } if(result) {
+                }
+                if (result) {
                     resolve(result);
                 }
 
@@ -45,9 +47,10 @@ function create(data) {
         new Company({
             name: data.name
         }).save((err, result) => {
-            if(err) {
+            if (err) {
                 reject(err);
-            } if(result) {
+            }
+            if (result) {
                 resolve(result);
             }
 
@@ -59,25 +62,28 @@ function create(data) {
 function update(id, data) {
     return new Promise(function (resolve, reject) {
         Company.updateOne({_id: id}, {
-            name: data.name
-        }, (err, result) => {
-            if(err) {
-                reject(err);
-            } if(result) {
-                resolve(result);
-            }
+                name: data.name
+            }, {runValidators: true},
+            (err, result) => {
+                if (err) {
+                    reject(err);
+                }
+                if (result) {
+                    resolve(result);
+                }
 
-            resolve(null);
-        })
+                resolve(null);
+            })
     });
 }
 
 function remove(id) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         Company.deleteOne({_id: id}, (err, result) => {
-            if(err) {
+            if (err) {
                 reject(err);
-            } if(result) {
+            }
+            if (result) {
                 resolve(result);
             }
 

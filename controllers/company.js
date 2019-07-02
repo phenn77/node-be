@@ -31,6 +31,7 @@ exports.findAll = async (req, res) => {
 
 exports.create = async (req, res) => {
     let data;
+    let result;
 
     const filter = {
         name: req.body.name
@@ -51,16 +52,17 @@ exports.create = async (req, res) => {
     };
 
     try {
-        await companyService.create(data);
+        result = await companyService.create(data);
     } catch (e) {
-        return message.error(res, "Error creating Company");
+        return message.error(res, e.errors.name.message);
     }
 
-    return message.success(res, data);
+    return message.success(res, result);
 };
 
 exports.update = async (req, res) => {
     let data;
+    let result;
 
     let nameTaken;
     const filter = {
@@ -86,7 +88,7 @@ exports.update = async (req, res) => {
     try {
         nameTaken = await companyService.findExist(filter);
     } catch (e) {
-        return message.error(res, "Error finding Company");
+        return message.error(res, e.errors.name.message);
     }
 
     if(nameTaken) {
@@ -97,12 +99,12 @@ exports.update = async (req, res) => {
     data = req.body;
 
     try {
-        await companyService.update(req.params.id, data);
+        result = await companyService.update(req.params.id, data);
     } catch (e) {
-        return message.error(res, "Error update Company")
+        return message.error(res, e.errors.name.message)
     }
 
-    return message.success(res, data);
+    return message.success(res, result);
 };
 
 exports.delete = async (req, res) => {

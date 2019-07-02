@@ -1,13 +1,14 @@
 const Product = require('../models/product');
 
 function findById(id) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         Product.findOne({_id: id})
             .populate('company')
             .exec((err, result) => {
-                if(err) {
+                if (err) {
                     reject(err);
-                } if(result) {
+                }
+                if (result) {
                     resolve(result);
                 }
 
@@ -17,27 +18,29 @@ function findById(id) {
 }
 
 function findAll() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         Product.find({})
             .populate('company')
             .exec((err, result) => {
-                if(err) {
+                if (err) {
                     reject(err);
-                } if(result) {
+                }
+                if (result) {
                     resolve(result);
                 }
 
                 resolve(null);
-        })
+            })
     });
 }
 
 function findExist(filter) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         Product.findOne(filter, (err, result) => {
-            if(err) {
+            if (err) {
                 reject(err);
-            } if(result) {
+            }
+            if (result) {
                 resolve(result);
             }
 
@@ -47,15 +50,16 @@ function findExist(filter) {
 }
 
 function create(data) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         new Product({
             name: data.name,
             price: data.price,
             company: data.company
         }).save((err, result) => {
-            if(err) {
+            if (err) {
                 reject(err);
-            } if(result) {
+            }
+            if (result) {
                 resolve(result);
             }
 
@@ -65,29 +69,32 @@ function create(data) {
 }
 
 function update(id, data) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         Product.updateOne({_id: id}, {
-            name: data.name,
-            price: data.price,
-            company: data.company
-        }, (err, result) => {
-            if(err) {
-                reject(err);
-            } if(result) {
-                resolve(result);
-            }
+                name: data.name,
+                price: data.price,
+                company: data.company
+            }, {runValidators: true},
+            (err, result) => {
+                if (err) {
+                    reject(err);
+                }
+                if (result) {
+                    resolve(result);
+                }
 
-            resolve(null);
-        })
+                resolve(null);
+            })
     });
 }
 
 function remove(id) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         Product.deleteOne({_id: id}, (err, result) => {
-            if(err) {
+            if (err) {
                 reject(err);
-            } if(result) {
+            }
+            if (result) {
                 resolve(result);
             }
 

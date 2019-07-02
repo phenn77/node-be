@@ -5,7 +5,7 @@ const CompanySchema = new Schema({
     name: {
         type: String,
         unique: true,
-        required: true
+        required: [true, 'Company name is required']
     }
 }, {
     timestamps: true,

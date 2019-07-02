@@ -8,7 +8,7 @@ exports.findById = async (req, res) => {
     try {
         data = await productService.findById(req.params.id);
     } catch (e) {
-        return message.error(res, "Error finding Product with ID");
+        return message.error(res, "Error finding Product");
     }
 
     if (!data) {
@@ -33,6 +33,7 @@ exports.findAll = async (req, res) => {
 exports.create = async (req, res) => {
     let data;
     let companyData;
+    let result;
 
     const filter = {
         name: req.body.name
@@ -69,16 +70,18 @@ exports.create = async (req, res) => {
     };
 
     try {
-        await productService.create(data);
+        result = await productService.create(data);
     } catch (e) {
-        return message.error(res, "Error creating Product");
+        let key = Object.keys(e.errors)[0]; //to get the validate field
+        return message.error(res, e.errors[key].message);
     }
 
-    return message.success(res, data);
+    return message.success(res, result);
 };
 
 exports.update = async (req, res) => {
     let data;
+    let result;
 
     let nameTaken;
     const filter = {
@@ -101,7 +104,6 @@ exports.update = async (req, res) => {
     /* Find Product */
 
     /* Find Exist Product's name */
-
     try {
         nameTaken = await productService.findExist(filter);
     } catch {
@@ -116,12 +118,12 @@ exports.update = async (req, res) => {
     data = req.body;
 
     try {
-        await productService.update(req.params.id, data);
+        result = await productService.update(req.params.id, data);
     } catch (e) {
-        return message.error("Error updating Product");
+        return message.error(e.errors.name.message);
     }
 
-    return message.success(res, data);
+    return message.success(res, result);
 };
 
 exports.delete = async (req, res) => {
