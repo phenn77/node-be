@@ -12,8 +12,6 @@ const mongoose = require('mongoose');
 let dev_db_url = 'mongodb://localhost:27017/test';
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
-console.log(mongoDB);
-
 mongoose.connect(mongoDB, {useNewUrlParser: true});
 mongoose.Promise = global.Promise;
 

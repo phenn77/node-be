@@ -17,7 +17,7 @@ function findById(id) {
 }
 
 function findAll() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         Invoice.find({}, (err, result) => {
             if (err) {
                 reject(err);
@@ -53,8 +53,48 @@ function create(data) {
     })
 }
 
+function update(id, data) {
+    return new Promise(function (resolve, reject) {
+        Invoice.updateOne({_id: id}, {
+                name: data.name,
+                totalPrice: data.totalPrice,
+                tax: data.tax,
+                serviceCharge: data.serviceCharge,
+                transactionDate: data.transactionDate,
+                details: data.details
+            }, {runValidators: true},
+            (err, result) => {
+                if (err) {
+                    reject(err);
+                }
+                if (result) {
+                    resolve(result);
+                }
+
+                resolve(null);
+            })
+    })
+}
+
+function remove(id) {
+    return new Promise(function (resolve, reject) {
+        Invoice.deleteOne({_id: id}, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+            if (result) {
+                resolve(result);
+            }
+
+            resolve(null);
+        })
+    })
+}
+
 module.exports = {
     findById,
     findAll,
-    create
+    create,
+    update,
+    remove
 };

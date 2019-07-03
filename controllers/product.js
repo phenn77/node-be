@@ -120,7 +120,8 @@ exports.update = async (req, res) => {
     try {
         result = await productService.update(req.params.id, data);
     } catch (e) {
-        return message.error(e.errors.name.message);
+        let key = Object.keys(e.errors)[0]; //to get the validate field
+        return message.error(res, e.errors[key].message);
     }
 
     return message.success(res, result);
