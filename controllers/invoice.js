@@ -1,4 +1,5 @@
 const invoiceService = require('../services/invoice');
+const participantService = require('../services/participant');
 const message = require('../library/message');
 
 exports.findById = async (req, res) => {
@@ -30,8 +31,7 @@ exports.findAll = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-    let result;
-    let sumDetailPrice;
+    let invoice;
 
     const data = {
         name: req.body.name,
@@ -43,20 +43,14 @@ exports.create = async (req, res) => {
         details: req.body.details
     };
 
-    for(let value of data.details) {
-        console.log(value.price);
-        sumDetailPrice +=  value.price;
+    try {
+        invoice = await invoiceService.create(data);
+    } catch (e) {
+        let key = Object.keys(e.errors)[0]; //to get the validate field
+        return message.error(res, e.errors[key].message);
     }
 
-    console.log(sumDetailPrice);
-    // try {
-    //     result = await invoiceService.create(data);
-    // } catch (e) {
-    //     let key = Object.keys(e.errors)[0]; //to get the validate field
-    //     return message.error(res, e.errors[key].message);
-    // }
-
-    return message.success(res, result);
+    return message.success(res, invoice);
 };
 
 exports.update = async (req, res) => {
@@ -69,7 +63,7 @@ exports.update = async (req, res) => {
         return message.error(res, "Error finding Invoice");
     }
 
-    if(!data) {
+    if (!data) {
         return message.notFound(res, "Invoice not found");
     }
 
@@ -91,10 +85,10 @@ exports.delete = async (req, res) => {
     try {
         data = await invoiceService.findById(req.params.id);
     } catch (e) {
-        return message.error(res,"Error finding Invoice");
+        return message.error(res, "Error finding Invoice");
     }
 
-    if(!data) {
+    if (!data) {
         return message.notFound(res, "Invoice not found");
     }
 
@@ -111,4 +105,59 @@ exports.delete = async (req, res) => {
 
 exports.split = async (req, res) => {
     let data;
+    let container = [];
+    let participantList = [];
+
+    let participantData = await participantService.findAll();
+    for (let participant of participantData) {
+        participantList[participant._id] = participant.name;
+    }
+
+    try {
+        data = await invoiceService.findById(req.params.id);
+    } catch (e) {
+        return message.error(res, "Error finding Invoice");
+    }
+
+    if (!data) {
+        return message.notFound(res, "Invoice not found");
+    }
+
+    /*
+    * {
+  "container": [
+    {
+      "name": "A",
+      "price": [
+        1000,
+        2000,
+        3000]
+    }, {
+      "name": "B",
+      "price": [
+        1000,
+        2000,
+        4000]
+    }, {
+      "name": "C",
+      "price": [
+        1500,
+        2000]
+    }]
+}
+    *
+    * */
+
+    for (let value of data.details) {
+        for (let participant of value.participants) {
+            container = [{
+                name: participantList[participant],
+                price: [Math.round(value.price / value.participants.length)]
+            }]
+        }
+    }
+
+    console.log(container);
+
+    return message.success(res, container);
 };

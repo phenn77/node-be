@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const product = require('./routes/product'); // Imports routes for the products
 const company = require('./routes/company');
 const invoice = require('./routes/invoice');
+const participant = require('./routes/participant');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use('/products', product);
 app.use('/companies', company);
 app.use('/invoices', invoice);
+app.use('/participants', participant);
 
 let port = 7777;
 

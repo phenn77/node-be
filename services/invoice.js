@@ -37,6 +37,9 @@ function create(data) {
         new Invoice({
             name: data.name,
             totalPrice: data.totalPrice,
+            grandTotal: data.grandTotal,
+            tax: data.tax,
+            serviceCharge: data.serviceCharge,
             transactionDate: data.transactionDate,
             details: data.details
         }).save((err, result) => {
@@ -58,6 +61,7 @@ function update(id, data) {
         Invoice.updateOne({_id: id}, {
                 name: data.name,
                 totalPrice: data.totalPrice,
+                grandTotal: data.grandTotal,
                 tax: data.tax,
                 serviceCharge: data.serviceCharge,
                 transactionDate: data.transactionDate,

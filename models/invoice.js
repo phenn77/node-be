@@ -34,7 +34,12 @@ const InvoiceSchema = new Schema({
                 type: Number,
                 required: [true, 'Detail price is required'],
                 min: [1, 'Detail price minimum 1000']
-            }
+            },
+            participants: [{
+                type: mongoose.Schema.Types.ObjectId,
+                required: [true, 'Participants are required'],
+                req: 'Participant'
+            }]
         }
     ],
 }, {
@@ -53,5 +58,15 @@ InvoiceSchema.path('details').validate(function (detail) {
 
     return true;
 }, 'Details must not empty');
+
+InvoiceSchema.path('details').schema.path('participants').validate(function (participant) {
+    if (!participant) {
+        return false;
+    } else if (participant.length === 0) {
+        return false;
+    }
+
+    return true;
+}, 'Participants must not empty');
 
 module.exports = mongoose.model('Invoice', InvoiceSchema);

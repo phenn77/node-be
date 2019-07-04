@@ -1,42 +1,8 @@
-const Company = require('../models/company');
+const Participant = require('../models/participant');
 
 function findById(id) {
     return new Promise(function (resolve, reject) {
-        Company.findOne({_id: id})
-            .populate('products')
-            .exec((err, result) => {
-                if (err) {
-                    reject(err);
-                }
-                if (result) {
-                    resolve(result);
-                }
-
-                resolve(null);
-            })
-    });
-}
-
-function findAll() {
-    return new Promise(function (resolve, reject) {
-        Company.find({})
-            .populate('products')
-            .exec((err, result) => {
-                if (err) {
-                    reject(err);
-                }
-                if (result) {
-                    resolve(result);
-                }
-
-                resolve(null);
-            })
-    });
-}
-
-function findExist(filter) {
-    return new Promise(function (resolve, reject) {
-        Company.findOne(filter, (err, result) => {
+        Participant.findOne({_id: id}, (err, result) => {
             if (err) {
                 reject(err);
             }
@@ -50,9 +16,41 @@ function findExist(filter) {
     });
 }
 
+function findAll() {
+    return new Promise(function (resolve, reject) {
+        Participant.find({}, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+
+            if (result) {
+                resolve(result);
+            }
+
+            resolve(null);
+        })
+    });
+}
+
+function findExist(data) {
+    return new Promise(function (resolve, reject) {
+        Participant.findOne({name: data.name}, (err, result) => {
+            if (err) {
+                reject(err);
+            }
+
+            if (result) {
+                resolve(result);
+            }
+
+            resolve(null);
+        })
+    })
+}
+
 function create(data) {
     return new Promise(function (resolve, reject) {
-        new Company({
+        new Participant({
             name: data.name
         }).save((err, result) => {
             if (err) {
@@ -70,13 +68,14 @@ function create(data) {
 
 function update(id, data) {
     return new Promise(function (resolve, reject) {
-        Company.updateOne({_id: id}, {
+        Participant.updateOne({_id: id}, {
                 name: data.name
             }, {runValidators: true},
             (err, result) => {
                 if (err) {
                     reject(err);
                 }
+
                 if (result) {
                     resolve(result);
                 }
@@ -88,10 +87,11 @@ function update(id, data) {
 
 function remove(id) {
     return new Promise(function (resolve, reject) {
-        Company.deleteOne({_id: id}, (err, result) => {
+        Participant.deleteOne({_id: id}, (err, result) => {
             if (err) {
                 reject(err);
             }
+
             if (result) {
                 resolve(result);
             }
@@ -103,9 +103,9 @@ function remove(id) {
 
 module.exports = {
     findById,
-    findExist,
     findAll,
+    findExist,
     create,
     update,
     remove
-}
+};
