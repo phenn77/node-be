@@ -10,7 +10,7 @@ exports.findById = async (req, res) => {
         return message.error(res, "Error finding participant");
     }
 
-    if(!data) {
+    if (!data) {
         return message.notFound(res, "Participant not found");
     }
 
@@ -39,12 +39,12 @@ exports.create = async (req, res) => {
         return message.error(res, "Error finding existing name");
     }
 
-    if(data) {
+    if (data) {
         return message.error(res, "Name already used");
     }
 
     try {
-      result = await participantService.create(req.body);
+        result = await participantService.create(req.body);
     } catch (e) {
         let key = Object.keys(e.errors)[0]; //to get the validate field
         return message.error(res, e.errors[key].message);
@@ -63,7 +63,7 @@ exports.update = async (req, res) => {
         return message.error(res, "Error finding Participant");
     }
 
-    if(!data) {
+    if (!data) {
         return message.notFound(res, "Participant not found");
     }
 
@@ -85,7 +85,7 @@ exports.delete = async (req, res) => {
         return message.error(res, "Error finding Participant");
     }
 
-    if(!data) {
+    if (!data) {
         return message.notFound(res, "Participant not found");
     }
 

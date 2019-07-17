@@ -1,6 +1,7 @@
 const invoiceService = require('../services/invoice');
 const participantService = require('../services/participant');
 const message = require('../library/message');
+const math = require('../library/math');
 
 exports.findById = async (req, res) => {
     let data;
@@ -123,41 +124,53 @@ exports.split = async (req, res) => {
         return message.notFound(res, "Invoice not found");
     }
 
-    /*
-    * {
-  "container": [
-    {
-      "name": "A",
-      "price": [
-        1000,
-        2000,
-        3000]
-    }, {
-      "name": "B",
-      "price": [
-        1000,
-        2000,
-        4000]
-    }, {
-      "name": "C",
-      "price": [
-        1500,
-        2000]
-    }]
-}
-    *
-    * */
-
+    /* List of Participant with each Price of Menu */
     for (let value of data.details) {
         for (let participant of value.participants) {
-            container = [{
+            container.push({
                 name: participantList[participant],
-                price: [Math.round(value.price / value.participants.length)]
-            }]
+                menu: {
+                    [value.name]: Math.round(value.price / value.participants.length)
+                },
+                price: Math.round(value.price / value.participants.length)
+            });
         }
     }
 
-    console.log(container);
+    /* Get list of price on each Participant */
+    let getEachPrice = container.reduce(function (value, key) {
+        value[key.name] = value[key.name] || [];
 
-    return message.success(res, container);
+        value[key.name].push(key.price);
+
+        return value;
+    }, Object.create(null));
+
+    /* Get list of menu on each Participant */
+    let getEachMenu = container.reduce(function (value, key) {
+        value[key.name] = value[key.name] || [];
+
+        value[key.name].push(key.menu);
+
+        return value;
+    }, Object.create(null));
+
+    /* Group participant with list of menu and amount */
+    let result = container.reduce(function (value, key) {
+        const grandTotal = math.arrSum(getEachPrice[key.name]);
+        const servCharge = Math.round((grandTotal * data.serviceCharge) / 100);
+        const tax = Math.round((grandTotal + servCharge) * (data.tax / 100));
+
+        value[key.name] = {
+            menu: Object.assign({}, ...getEachMenu[key.name]),
+            grandTotal: grandTotal,
+            serviceCharge: servCharge,
+            tax: tax,
+            total: grandTotal + servCharge + tax
+        };
+
+        return value;
+    }, Object.create(null));
+
+    return message.success(res, result);
 };

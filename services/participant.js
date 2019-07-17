@@ -34,7 +34,10 @@ function findAll() {
 
 function findExist(data) {
     return new Promise(function (resolve, reject) {
-        Participant.findOne({name: data.name}, (err, result) => {
+        Participant.findOne(
+            {
+                name: data.name
+            }, (err, result) => {
             if (err) {
                 reject(err);
             }
